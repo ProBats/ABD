@@ -1,3 +1,4 @@
+use adventureworks2008R2;
 -- TPN1 Writing Queries con SQL Server	
 -- select - where
 
@@ -84,48 +85,152 @@ select Name, ListPrice, Color
 from Production.Product
 where ListPrice > 100 and Name like '%seat%'
 
-16. mostrar las bicicletas de montaña que  cuestan entre $1000 y $1200 
-17. mostrar los nombre de los productos que tengan cualquier combinacion de ‘mountain bike’ 
-18. mostrar las personas que su nombre empiece con la letra y 
-19. mostrar las personas que la segunda letra de su apellido es una s 
-20. mostrar el nombre concatenado con el apellido de las personas cuyo apellido tengan terminacion española (ez)
-21. mostrar los nombres de los productos que su nombre termine en un numero 
-22. mostrar las personas cuyo  nombre tenga una c o c como primer caracter, cualquier otro como segundo caracter, ni d ni d ni f ni g como tercer caracter, cualquiera entre j y r o entre s y w como cuarto caracter y el resto sin restricciones 
+-- 16. mostrar las bicicletas de montaña que  cuestan entre $1000 y $1200 
 
-order by
+select Name, ListPrice
+from Production.Product
+where ListPrice between 1000 and 1200 and Name like '%mountain bike%'
 
-23. mostrar las personas ordernadas primero por su apellido y luego por su nombre
-24. mostrar cinco productos mas caros y su nombre ordenado en forma alfabetica
+-- 17. mostrar los nombre de los productos que tengan cualquier combinacion de ‘mountain bike’ 
+select Name
+from Production.Product
+where Name like '%mountain%bike%'
 
-funciones de agrupacion
+-- 18. mostrar las personas que su nombre empiece con la letra y 
 
-25. mostrar la fecha mas reciente de venta 
-26. mostrar el precio mas barato de todas las bicicletas 
-27. mostrar la fecha de nacimiento del empleado mas joven 
+select FirstName, LastName
+from Person.Person
+where FirstName like 'y%'
 
-null
+-- 19. mostrar las personas que la segunda letra de su apellido es una s 
 
-28. mostrar los representantes de ventas (vendedores) que no tienen definido el numero de territorio
-29. mostrar el peso promedio de todos los articulos. si el peso no estuviese definido, reemplazar por cero
+select FirstName, LastName
+from Person.Person
+where LastName like '_s%'
 
-group by
+-- 20. mostrar el nombre concatenado con el apellido de las personas cuyo apellido tengan terminacion española (ez)
+select	FirstName + ' ' + LastName as Persona
+from	Person.Person
+where	LastName like '%ez'
 
-30. mostrar el codigo de subcategoria y el precio del producto mas barato de cada una de ellas 
-31. mostrar los productos y la cantidad total vendida de cada uno de ellos
-32. mostrar los productos y la cantidad total vendida de cada uno de ellos, ordenarlos por mayor cantidad de ventas
-33. mostrar todas las facturas realizadas y el total facturado de cada una de ellas ordenado por numero de factura.
+-- 21. mostrar los nombres de los productos que su nombre termine en un numero 
+select	Name as Producto
+from	Production.Product
+where	Name like '%[0-9]'
 
-having
+-- 22. mostrar las personas cuyo  nombre tenga una c o C como primer caracter, cualquier otro como segundo caracter, ni d ni D ni f ni g como tercer caracter, cualquiera entre j y r o entre s y w como cuarto caracter y el resto sin restricciones
+select	FirstName Nombre
+from	Person.Person
+where	FirstName like '[c,C]_[^dDfg][j-w]%'
 
-34. mostrar todas las facturas realizadas y el total facturado de cada una de ellas ordenado por nro de factura  pero solo de aquellas ordenes superen un total de $10.000 
-35. mostrar la cantidad de facturas que vendieron mas de 20 unidades 
-36. mostrar las subcategorias de los productos que tienen dos o mas productos que cuestan menos de $150 
-37. mostrar todos los codigos de categorias existentes junto con la cantidad de productos y el precio de lista promedio por cada uno de aquellos productos que cuestan mas de $70 y el precio promedio es mayor a $300 
+-- 23. mostrar las personas ordernadas primero por su apellido y luego por su nombre
+select		FirstName + '            ' + LastName as Persona 
+from		Person.Person
+order by	LastName asc, FirstName asc
 
-compute
+-- 24. mostrar cinco productos mas caros y su nombre ordenado en forma alfabetica
+select	top 5	*
+from			Production.Product
+order by		ListPrice desc, Name asc
 
-38. mostrar numero de factura, el monto vendido y al final totalizar la facturacion 
+-- 25. mostrar la fecha mas reciente de venta
+select	MAX(OrderDate) as 'fecha mas reciente de venta'
+from	Sales.SalesOrderHeader
 
+
+-- 26. mostrar el precio mas barato de todas las bicicletas 
+
+select	MIN(ListPrice) as 'bici mas barata'
+from	Production.Product
+where	Name like '%bike%'
+
+-- 27. mostrar la fecha de nacimiento del empleado mas joven 
+select	Max(BirthDate) as 'Nacimiento del empleado mas joven'
+from	HumanResources.Employee
+
+-- 28. mostrar los representantes de ventas (vendedores) que no tienen definido el numero de territorio
+SELECT *
+FROM Sales.SalesPerson
+WHERE TerritoryID IS NULL
+
+
+-- 29. mostrar el peso promedio de todos los articulos. si el peso no estuviese definido, reemplazar por cero
+select	AVG(ISNULL(Weight, 0)) as 'Peso Promedio'
+from	Production.Product
+
+-- group by
+
+-- 30. mostrar el codigo de subcategoria y el precio del producto mas barato de cada una de ellas 
+select		ProductSubcategoryID as Subcategoria,
+			MIN(ListPrice) 'Precio mas barato'
+from		Production.Product
+group by	ProductSubcategoryID
+
+-- 31. mostrar los productos y la cantidad total vendida de cada uno de ellos
+select		ProductID as Producto,
+			SUM(OrderQty) as 'Total de Ventas'
+from		Sales.SalesOrderDetail
+group by	ProductID
+order by	1
+
+-- 32. mostrar los productos y la cantidad total vendida de cada uno de ellos, ordenarlos por mayor cantidad de ventas
+
+select		ProductID as Producto,
+			SUM(OrderQty) as 'Total de Ventas'
+from		Sales.SalesOrderDetail
+group by	ProductID
+order by	'Total de Ventas' desc
+
+
+-- 33. mostrar todas las facturas realizadas y el total facturado de cada una de ellas ordenado por numero de factura.
+select		SalesOrderID as Factura,
+			SUM(OrderQty * UnitPrice) as Subtotal
+from		Sales.SalesOrderDetail
+group by	SalesOrderID
+-- order by	1
+-- order by	SalesOrderID
+order by	Factura
+
+-- having
+
+--34. mostrar todas las facturas realizadas y el total facturado de cada una de ellas ordenado por nro de factura  pero solo de aquellas ordenes superen un total de $10.000
+select		SalesOrderID as Factura,
+			SUM(OrderQty * UnitPrice) as Subtotal
+from		Sales.SalesOrderDetail
+group by	SalesOrderID
+having		SUM(OrderQty * UnitPrice) > 10000
+order by	1
+
+-- 35. mostrar la cantidad de facturas que vendieron mas de 20 unidades 
+
+select	SalesOrderID,
+		SUM(OrderQty) as 'Total de Ventas'
+from	Sales.SalesOrderDetail
+group by SalesOrderID
+having SUM(OrderQty) > 20
+
+--36. mostrar las subcategorias de los productos que tienen dos o mas productos que cuestan menos de $150 
+select		ProductSubcategoryID as 'Subcategoria de Producto',
+			COUNT(*) as Cantidad
+from		Production.Product
+where		ListPrice < 150
+group by	ProductSubcategoryID
+having		COUNT(*) >= 2
+order by	2 desc
+
+--37. mostrar todos los codigos de categorias existentes junto con la cantidad de productos y el precio de lista promedio por cada uno de aquellos productos que cuestan mas de $70 y el precio promedio es mayor a $300 
+select		ProductSubcategoryID as 'Subcategoria de Producto',
+			COUNT(*) as cantidad,
+			AVG(ListPrice) as 'Precio Promedio'
+from		Production.Product
+where		ListPrice > 70
+group by	ProductSubcategoryID
+having		AVG(ListPrice) > 300
+order by	2 desc
+
+-- compute
+
+-- 38. mostrar numero de factura, el monto vendido y al final totalizar la facturacion 
 
 -- joins
 
@@ -141,6 +246,7 @@ select p.LastName + ' '+ p.FirstName Empleado
 from Person.Person p
 inner join HumanResources.Employee e on e.BusinessEntityID = p.BusinessEntityID
 ORDER BY 1;
+
 -- 41. mostrar el codigo de logueo, numero de territorio y sueldo basico de los vendedores 
 select e.LoginID 'Codigo de Logue', s.TerritoryID 'Numero de Territorio', s.Bonus 'Sueldo Basico'
 from HumanResources.Employee e join Sales.SalesPerson s on e.BusinessEntityID = s.BusinessEntityID;
@@ -151,12 +257,14 @@ select *
 from Production.Product p 
 join Production.ProductSubcategory ps on p.ProductSubcategoryID = ps.ProductSubcategoryID
 where ps.Name = 'Wheels';
+
 -- 43. mostrar los nombres de los productos que no son bicicletas 
 select * from Production.Product;
 select *
 from Production.Product p 
 join Production.ProductSubcategory ps on p.ProductSubcategoryID = ps.ProductSubcategoryID
 where ps.Name not LIKE '%bikes%';
+
 -- 44.mostrar los precios de venta de aquellos  productos donde el precio de venta sea inferior al precio de lista recomendado  para ese producto ordenados por nombre de producto
 select * from Production.Product;
 select * from Sales.SalesOrderDetail;
@@ -222,7 +330,6 @@ select * from Production.Product;
 SELECT Name Nombre,ListPrice Precio, (select avg(ListPrice) from Production.Product)  Promedio, ListPrice - (select avg(ListPrice) from Production.Product)  Diferencia
 from Production.Product
 order by ListPrice desc; 
-
 
 -- 53. mostrar el o los codigos del producto mas caro 
 
@@ -307,8 +414,8 @@ select * from Sales.SalesTerritory;
 select *
 from Sales.SalesOrderHeader
 where TerritoryID in(select TerritoryID 
-					 from Sales.SalesTerritory 
-					 where CountryRegionCode in('us','gb','fr'));
+						from Sales.SalesTerritory 
+						where CountryRegionCode in('us','gb','fr'));
 -- 61.mostrar los nombres de los diez productos mas caros
 select Name, ListPrice
 from Production.Product
@@ -565,7 +672,7 @@ exec Proveedores 'reflector'
 exec Proveedores 
 
 -- 86. crear un procedimiento almacenado que devuelva nombre,apellido y sector del empleado que le pasemos como argumento.no es necesario pasar el nombre y apellido exactos al procedimiento.
- go
+go
 create procedure empleados
 	@apellido nvarchar(50)='%',
 	@nombre nvarchar(50)='%'
@@ -593,6 +700,7 @@ BEGIN
 end
 
 --uso de la funcion
+go
 select * from Production.Product
 where ListPrice > dbo.promedio()
 
@@ -616,7 +724,7 @@ as
 -- funciones de tabla en linea
 
 --  89.armar una funci�n que dado un a�o , devuelva nombre y  apellido de los empleados que ingresaron ese a�o 
-
+go
 create function AñoIngresoEmpleado (@año int)
 returns TABLE
 AS
@@ -667,7 +775,7 @@ AS
         where ListPrice < @minimo
         return
     end
- go
+go
  select * from dbo.Ofertas(5)
 -- datetime
 
