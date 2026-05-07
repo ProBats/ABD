@@ -1,0 +1,37 @@
+c) Clinica_Medica = #Clinica + Nombre_Clinica + Dirección_Clinica + Teléfono_Clinica+ { #Matricula_Medico + Apellido_Nombre_Medico + Fecha_Ingreso_a_la_Clinica 
+		    + #Codigo_Especialidad + Nombre_Especialidad}
+
+1FN
+
+Clinica_Medica = @#Clinica + Nombre_Clinica + Dirección_Clinica + Teléfono_Clinica.	
+
+Clinica_Medico = @#Clinica + @#Matricula_Medico + Apellido_Nombre_Medico + Fecha_Ingreso_a_la_Clinica + #Codigo_Especialidad + Nombre_Especialidad
+
+2FN
+
+Clinica_Medica = @#Clinica + Nombre_Clinica + Dirección_Clinica + Teléfono_Clinica.	
+
+Clinica_Medico = @#Clinica + @#Matricula_Medico + Fecha_Ingreso_a_la_Clinica 
+
+Medico = @#Matricula_Medico + Apellido_Nombre_Medico + #Codigo_Especialidad + Nombre_Especialidad
+
+3FN
+
+Clinica_Medica = @#Clinica + Nombre_Clinica + Dirección_Clinica + Teléfono_Clinica.	
+
+Clinica_Medico = @#Clinica + @#Matricula_Medico + Fecha_Ingreso_a_la_Clinica 
+
+Medico = @#Matricula_Medico + #Codigo_Especialidad + Apellido_Nombre_Medico + 
+
+Especialidad = @#Codigo_Especialidad + Nombre_Especialidad
+
+
+1) DETERMINAR LA CLAVE PRINCIPAL DE LA ENTIDAD ORIGINAL --> @
+2) COLOCAR # A TODOS LOS ATRIBUTOS NUMERICOS
+3) DETERMINAR ENTRE LLAVES EL GRUPO REPETITIVO (SI NO EXISTE GRUPO REETITIVO ENTONCES YA ESTA EN 1FN )
+4) DETERMINAR LA CLAVE PRINCIPAL DEL GRUPO REPETITIVO --> @
+5) CORTAR EL GRUPO REPETITIVO COMPLETO Y PEGARLO EN UNA NUEVA ENTIDAD Y AGREGAR EN LA NUEVA ENTIDAD LA CLAVE PRINCIPAL DE LA ENTIDAD ORIGINAL(QUEDA UNA CLAVE PRINCIPAL COMPUESTA) -> 1FN
+6) PARA DETERMINAR SI EST EN 2FN	
+			--> CADA ENTIDAD DEBE ESTAR EN 1FN
+			--> SI UNA ENTIDAD TIENE UNA CLAE PRINCIPAL SIMPLE ENTONCES YA ESTA EN 2FN
+			--> SI UNA ENTIDAD TIENE UNA CLAE PRINCIPAL COMPUESTA, ENTONCES DETERMINAR PARA CADA ATRIBUTO QUE NO FORMA PARTE DE LA CLAVE PRINCIPAL COMPUESTA, SI EXISTE DEPENDENCIA FUNCIONAL DE LA CLAVE PRINCIPAL COMPUESTA COMPLETA O DE PARTE DE ELLA. SI HAY DEPENDENCIA DE LA CLAVE COMPLETA, ENTONCES EL ATRIBUTO

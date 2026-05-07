@@ -1,0 +1,41 @@
+Ejercicio 2
+b- Pedido de Fabricación = @#Nro_Pedido + #Nro_Proveedor + Razon_Social + Fecha + CUIT Proveedor + {#Código_Articulo + Descripción Artículo + #Cantidad} + #Cantidad Total Pedida de Artículos
+
+
+1FN
+Pedido de Fabricación = @#Nro_Pedido + #Nro_Proveedor + Razon_Social + Fecha + CUIT Proveedor + #Cantidad Total Pedida de Artículos
+
+Detalle_Pedidos = @#Nro_Pedido + @#Código_Articulo + Descripción Artículo + #Cantidad
+
+----------------------------------------------------------------
+2FN
+Pedido de Fabricación = @#Nro_Pedido + #Nro_Proveedor + Razon_Social + Fecha + CUIT Proveedor + #Cantidad Total Pedida de Artículos
+
+Detalle_Pedidos = @#Nro_Pedido + @#Código_Articulo + #Cantidad
+
+Articulo = @#Código_Articulo + Descripción Artículo
+
+------------------------------------------------------------
+3FN
+Pedido de Fabricación = @#Nro_Pedido + #Nro_Proveedor + Fecha +  #Cantidad Total Pedida de Artículos
+
+Detalle_Pedidos = @#Nro_Pedido + @#Código_Articulo + #Cantidad
+
+Articulo = @#Código_Articulo + Descripción Artículo
+
+Proveedor = @#Nro_Proveedor + Razon Social + CUIT Proveedor
+
+
+atributo calculado
+Cantidad Total Pedida de Artículos = sum(cantidad)
+
+----------------------------------------------------------------
+Estructura Normalizada
+
+Pedido de Fabricación = @#Nro_Pedido + #Nro_Proveedor + Fecha
+
+Detalle_Pedidos = @#Nro_Pedido + @#Código_Articulo + #Cantidad
+
+Articulo = @#Código_Articulo + Descripción Artículo
+
+Proveedor = @#Nro_Proveedor + Razon Social + CUIT Proveedor

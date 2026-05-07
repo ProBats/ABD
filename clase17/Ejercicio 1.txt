@@ -1,0 +1,17 @@
+Ejercicio 1
+Dadas las siguientes estructuras de datos aplicar la Primera, Segunda y Tercera Forma Normal.
+
+a- Pasajero = @#Nro_Pasajero + Apellido + Nombre + #Cod_Pais_Nacimiento + Pais_Nacimiento + {Telefono} + Fecha_Nacimiento.
+
+1FN / 2FN
+Pasajero = @#Nro_Pasajero + Apellido + Nombre + #Cod_Pais_Nacimiento + Pais_Nacimiento + Fecha_Nacimiento.
+
+Pasajero_Telefono = @#Nro_Pasajero + @Telefono
+
+3FN
+Pasajero_Telefono = @#Nro_Pasajero + @Telefono
+
+Pasajero = @#Nro_Pasajero + Apellido + Nombre + #Cod_Pais_Nacimiento + Fecha_Nacimiento.
+
+Pais_Nacimiento = @#Cod_Pais_Nacimiento + Pais_Nacimiento
+
