@@ -31,21 +31,20 @@ select * from Production.Product
 
 go
 create procedure ProductoVendido
-    @producto nvarchar(50)
+    @producto int
 as
 BEGIN
-    IF EXISTS(  select pp.ProductID 
-                from Production.Product pp 
-                join Sales.SalesOrderDetail sod on pp.ProductID = sod.ProductID
-                where pp.Name = @producto)
+    IF EXISTS(  select 1 
+                from Sales.SalesOrderDetail 
+                where pp.ProductID = @producto)
         PRINT 'El PRODUCTO HA SIDO VENDIDO'
     else
     print 'El PRODUCTO NO HA SIDO VENDIDO'
 END
 
 -- drop procedure ProductoVendido;
-EXEC ProductoVendido @producto ='Mountain-100 Black, 42'; -- Producto Vendido
-EXEC ProductoVendido @producto ='Bearing Ball'; -- Producto Vendido
+EXEC ProductoVendido 1;
+EXEC ProductoVendido 707; 
 
 
 -- 3. Crear un procedimiento almacenado en el esquema dbo para la actualización de precios llamado ActualizaPrecio recibiendo como parámetros el producto y el precio.
@@ -53,7 +52,18 @@ EXEC ProductoVendido @producto ='Bearing Ball'; -- Producto Vendido
 -- Tablas: Production.Product
 -- Campos: ProductID, Name, ListPrice
 
+create procedure ActualizarPrecio
+    @Producto int, @Precio decimal(10,2)
+    as
+        update Production.Product
+        set ListPrice = @Precio
+        where ProductID = @Producto;
 
+        select ProductID, Name, ListPrice
+        from Production.product
+        where ProductID = @Producto;
+
+execute ActualizarPrecio 707,500;
 
 -- 4. Crear un procedimiento almacenado llamado ProveedorProducto que devuelva los proveedores, el nombre del producto y el número de cuenta, y el código de unidad de medida que proporciona el producto especificado por parámetro.
 
