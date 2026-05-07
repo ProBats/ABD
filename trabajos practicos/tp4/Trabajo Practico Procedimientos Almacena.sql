@@ -75,17 +75,17 @@ select* from Purchasing.ProductVendor;
 select* from Production.Product;
 go
 create procedure ProveedorProducto
-    @UnitMeasureCode nvarchar(4)
+    @Producto int
 AS
 BEGIN
-    select pp.Name, pv.AccountNumber, ppv.UnitMeasureCode
-    from Production.Product pp
-    join Purchasing.ProductVendor ppv on pp.ProductID = ppv.ProductID
-    join Purchasing.Vendor pv on ppv.BusinessEntityID = pv.BusinessEntityID
-    where ppv.UnitMeasureCode like @UnitMeasureCode 
+    select pp.Name Producto, ppv.Name Proveedor
+    from  Purchasing.Vendor pv
+    join Purchasing.ProductVendor ppv on ppv.BusinessEntityID = pv.BusinessEntityID
+    join Production.Product pp on pp.ProductID = ppv.ProductID
+    where pp.ProductID =@Producto;
 END
 
-EXEC ProveedorProducto @UnitMeasureCode ='ctn';
+EXEC ProveedorProducto 319;
 
 -- 5. Crear un procedimiento almacenado llamado EmpleadoSector que devuelva
 -- nombre, apellido y sector del empleado que le pasemos como argumento. No es necesario pasar el nombre y apellido exactos al procedimiento.
