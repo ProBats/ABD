@@ -1,4 +1,4 @@
--- EJERCITACIÓN
+-- EJERCITACIï¿½N
 
 -- 1-Crear una tabla llamada alumnos con los siguientes campos:
   
@@ -25,38 +25,69 @@ drop table alumnos;
 -- 2-Ingresar 6 registros con, al menos, 2 registros con igual apellido.
 
 INSERT INTO alumnos (legajo, documento, apellido, nombre, nota) VALUES
-('A0001', '30111222', 'García', 'Juan', 8.50),
-('A0002', '28999888', 'Pérez', 'María', 7.25),
-('A0003', '31555444', 'García', 'Carlos', 9.00),
-('A0004', '32777666', 'Rodríguez', 'Lucía', 6.75),
-('A0005', '29888777', 'Pérez', 'Ana', 8.00),
-('A0006', '33444555', 'Fernández', 'Miguel', 5.50);
+('A0001', '30111222', 'Garcï¿½a', 'Juan', 8.50),
+('A0002', '28999888', 'Pï¿½rez', 'Marï¿½a', 7.25),
+('A0003', '31555444', 'Garcï¿½a', 'Carlos', 9.00),
+('A0004', '32777666', 'Rodrï¿½guez', 'Lucï¿½a', 6.75),
+('A0005', '29888777', 'Pï¿½rez', 'Ana', 8.00),
+('A0006', '33444555', 'Fernï¿½ndez', 'Miguel', 5.50);
 
--- 3-Intente crear un índice agrupado único para el campo "apellido".
+-- 3-Intente crear un ï¿½ndice agrupado ï¿½nico para el campo "apellido".
 
 create unique clustered index I_alumnos_apellido
 on alumnos(apellido);
 
 sp_helpindex alumnos;
 
--- 4-Cree un índice agrupado, no único, para el campo "apellido".
+-- 4-Cree un ï¿½ndice agrupado, no ï¿½nico, para el campo "apellido".
 create clustered index I_alumnos_apellido
 on alumnos(apellido);
 
--- 5-Intente establecer una restricción "primary key" al campo "legajo" especificando que cree un índice agrupado.
+-- 5-Intente establecer una restricciï¿½n "primary key" al campo "legajo" especificando que cree un ï¿½ndice agrupado.
 
+-- Ya existe un indice clustered(solo puede haer 1 por tabla) 
 
+alter table alumnos 
+add constraint PK_alumnos_legajo
+primary key clustered(legajo);
 
--- 6-Establezca la restricción "primary key" al campo "legajo" especificando que cree un índice no agrupado.
+-- 6-Establezca la restricciï¿½n "primary key" al campo "legajo" especificando que cree un ï¿½ndice no agrupado.
 
--- 7-Vea los índices y las restricciones de la tabla alumnos:
+alter table alumnos 
+add constraint PK_alumnos_legajo
+primary key nonclustered(legajo);
 
--- 8-Cree un índice unique no agrupado para el campo "documento".
+-- 7-Vea los ï¿½ndices y las restricciones de la tabla alumnos:
 
+sp_helpindex alumnos;
+
+-- 8-Cree un ï¿½ndice unique no agrupado para el campo "documento".
+
+create unique nonclustered index I_alumnos_documento
+on alumnos(documento);
+
+drop index alumnos.I_alumnos_documento;
 -- 9-Intente ingresar un alumno con documento duplicado.
 
+-- No se pueden registrar alumnos con el mismo documento.
+INSERT INTO alumnos (legajo, documento, apellido, nombre, nota) VALUES
+('A0008', '30111223', 'GarcÃ­a', 'Jacinta', 5.50);
+
+select * from alumnos;
 -- 10-Elimine el indice agrupado al campo apellido.
 
+drop index alumnos.I_alumnos_apellido;
 -- 11-Regenere el indice del campo legajo para que sea agrupado.
 
 alter table alumnos
+drop constraint PK_alumnos_legajo
+GO
+
+alter table alumnos
+add constraint PK_alumnos_legajo
+primary key clustered(legajo)
+go
+
+exec sp_helpindex alumnos
+go
+exec sp_helpconstraint alumnos;
