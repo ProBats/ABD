@@ -145,16 +145,44 @@ on ps_SalesYear (OrderDate)
 --    SalesOrderID = 99999, CustomerID = 1, OrderDate = '06/15/2001',
 --    TotalDue = 500.00, Status = 5
 --    (Este registro debe caer en la Partición 1)
+
+insert INTO dbo.SalesOrderHeader (SalesOrderID, CustomerID, OrderDate, TotalDue, Status)
+SELECT SalesOrderID, CustomerID, OrderDate, TotalDue, Status
+FROM Sales.SalesOrderHeader
+
+insert INTO dbo.SalesOrderHeader (SalesOrderID, CustomerID, OrderDate, TotalDue, Status)
+VALUES (99999, 1, '06/15/2001', 500.00, 5)
+
 -- CONSIGNA 6: CONSULTAS DE VERIFICACIÓN
 -- a) Mostrar todos los registros de dbo.SalesOrderHeader
+SELECT * FROM dbo.SalesOrderHeader
 -- b) Consultar sys.Partitions para obtener el número de filas por partición
 --    de la tabla dbo.SalesOrderHeader
+select * from sys.partitions
+where object_id = object_id('dbo.SalesOrderHeader')
+
 -- c) Mostrar SalesID, OrderDate y el número de partición de cada fila
+SELECT SalesID, OrderDate, $Partition.pf_SalesYear(OrderDate) AS ParticionNro
+FROM dbo.SalesOrderHeader   
 -- d) Para cada partición, mostrar la fecha mínima y máxima de OrderDate
 --    y la cantidad de registros. Ordenar por número de partición.
+
+select 
+    $Partition.pf_SalesYear(OrderDate) AS ParticionNro,
+    MIN(OrderDate) AS FechaMinima,
+    MAX(OrderDate) AS FechaMaxima,
+    COUNT(*) AS CantidadRegistros
+FROM dbo.SalesOrderHeader
+GROUP BY $Partition.pf_SalesYear(OrderDate)
+ORDER BY ParticionNro
+
 --
 -- PREGUNTA TEÓRICA: ¿Los resultados coinciden con los rangos definidos
 --    en la función de partición? Justifique.
+
+-- Si, los resultados coinciden con los rangos definidos en la función de particion. La función de particion pf_SalesYear esta configurada para asignar las filas a las particiones segun el valor de OrderDate. Por ejemplo, las fechas anteriores al 01/01/2005 se asignan a la Particion 1, las fechas entre el 01/01/2005 y el 31/12/2005 se asignan a la Particion 2, y asi sucesivamente. Al consultar los datos agrupados por numero de particion, se puede verificar que las fechas minimas y maximas de cada particion corresponden a los rangos establecidos en la funcion de particion, lo que confirma que el particionamiento se ha realizado correctamente.
+
+
 -- LIMPIEZA - EJECUTAR AL FINALIZAR EL TP
 -- ATENCIÓN: Ejecutar esta sección solo una vez completadas y verificadas
 -- todas las consignas anteriores.
